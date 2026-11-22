@@ -1,0 +1,289 @@
+/* AverPress — авторски сайт (averpress.com/<псевдоним>/)
+   Подредбата следва crthorn: тъмен „гръб на книга“ отляво, голямо име, последни книги,
+   поредиците като атлас, книгите извън поредиците и „За автора“.
+   Цветът на автора идва от data.json → color и стои в --accent.
+   Стилът на служебните корици се добавя при сглобяване от static/style.css. */
+
+:root {
+  --ground: #f1f0ec;
+  --surface: #e7e5df;
+  --sheet: #fbfaf7;
+  --text: #1f1d1b;
+  --dim: #5c5751;
+  --rule: rgba(31, 29, 27, .14);
+  --spine: #1c1a19;
+  --spine-text: #ece9e2;
+  --spine-dim: #a39e95;
+  --accent: #8c1c2b;
+  --on-accent: #fbf8f4;
+
+  --serif: 'Literata', Georgia, serif;
+  --sans: 'Onest', system-ui, sans-serif;
+
+  --spine-w: 248px;
+  --container: 1120px;
+  --gutter: clamp(20px, 4vw, 56px);
+  --shadow-book: 0 1px 1px rgba(0,0,0,.18), 0 18px 30px -14px rgba(20,16,12,.55);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+body {
+  margin: 0;
+  font: 400 1.0625rem/1.65 var(--serif);
+  color: var(--text);
+  background: var(--ground);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+h1, h2, h3, p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+.skip { position: absolute; left: -999px; top: 0; z-index: 2000; background: var(--spine); color: #fff; padding: .5rem 1rem; }
+.skip:focus { left: 1rem; }
+
+/* ---------- гърбът ---------- */
+
+.spine {
+  position: fixed; inset: 0 auto 0 0; width: var(--spine-w); z-index: 1000;
+  background: var(--spine); color: var(--spine-text);
+  display: flex; flex-direction: column; padding: 2.25rem 1.75rem 1.75rem;
+}
+.spine-name { display: flex; flex-direction: column; font: 600 1.55rem/1.05 var(--serif); text-decoration: none; letter-spacing: -.01em; }
+.spine-name span + span { font-style: italic; font-weight: 400; }
+.spine-nav { margin-top: 2.75rem; display: flex; flex-direction: column; gap: .15rem; }
+.spine-nav a {
+  display: block; padding: .3rem 0 .3rem .9rem; margin-left: -.9rem;
+  color: var(--spine-dim); text-decoration: none; font-size: .98rem;
+  border-left: 2px solid transparent; transition: color .15s, border-color .15s;
+}
+.spine-nav a:hover { color: var(--spine-text); }
+.spine-nav a[aria-current] { color: var(--spine-text); border-left-color: var(--accent); }
+.spine-foot { margin-top: 1rem; padding-top: 1.25rem; border-top: 1px solid rgba(236,233,226,.12); font-size: .85rem; color: var(--spine-dim); }
+.spine-foot a { color: var(--spine-text); text-decoration: none; }
+.spine-foot a:hover { text-decoration: underline; }
+
+.langs {
+  margin-top: auto; padding-top: 1.25rem;
+  display: flex; flex-wrap: wrap; gap: .15rem .2rem;
+  font: 500 .78rem/1 var(--sans); letter-spacing: .06em;
+}
+.langs a { padding: .35rem .4rem; border-radius: 3px; color: var(--spine-dim); text-decoration: none; }
+.langs a:hover { color: var(--spine-text); background: rgba(255,255,255,.06); }
+.langs a[aria-current] { color: var(--spine-text); background: rgba(255,255,255,.1); box-shadow: inset 0 -2px 0 var(--accent); }
+
+.page { margin-left: var(--spine-w); min-height: 100vh; display: flex; flex-direction: column; }
+main { flex: 1; }
+.container { max-width: var(--container); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* ---------- заглавие на автора ---------- */
+
+.masthead { padding: clamp(3.5rem, 9vw, 7rem) 0 clamp(2.5rem, 5vw, 4rem); }
+.masthead h1 { display: flex; flex-direction: column; font: 500 clamp(3.6rem, 11vw, 8.5rem)/.9 var(--serif); letter-spacing: -.035em; }
+.masthead h1 span + span { font-style: italic; font-weight: 400; padding-left: .35em; }
+.tagline { margin-top: 1.1rem; font-size: 1.15rem; font-style: italic; color: var(--dim); }
+.intro { margin-top: 1.75rem; max-width: 40rem; font-size: 1.08rem; }
+.intro a { color: var(--accent); white-space: nowrap; }
+
+.section { padding: clamp(2.5rem, 5vw, 4rem) 0; border-top: 1px solid var(--rule); }
+.section-title { font: 600 .82rem/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 2rem; }
+
+/* ---------- последни книги ---------- */
+
+.spreads { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 2.5rem 3rem; }
+.spread { display: grid; grid-template-columns: 9.5rem 1fr; gap: 1.5rem; align-items: start; }
+.spread .book-cover { width: 9.5rem; }
+.kicker { font-size: .92rem; color: var(--dim); }
+.kicker a { color: var(--accent); text-decoration: none; }
+.kicker a:hover { text-decoration: underline; }
+.spread h3 { margin-top: .35rem; font: 600 1.6rem/1.15 var(--serif); letter-spacing: -.01em; }
+.spread h3 a { text-decoration: none; }
+.spread h3 a:hover { color: var(--accent); }
+.genre-line { margin-top: .4rem; font-size: .95rem; font-style: italic; color: var(--dim); }
+
+.actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.25rem; }
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem; padding: .6rem 1.15rem; border-radius: 3px;
+  font: 600 .9rem/1.2 var(--sans); text-decoration: none; border: 1px solid var(--accent);
+  background: var(--accent); color: var(--on-accent); transition: filter .15s;
+}
+.btn:hover { filter: brightness(1.12); }
+.btn-ghost { background: transparent; color: var(--accent); }
+.btn.is-disabled { opacity: .55; cursor: default; filter: none; }
+.btn small { font-weight: 500; opacity: .8; }
+.note { margin-top: .9rem; font-size: .9rem; color: var(--dim); }
+
+/* ---------- поредиците ---------- */
+
+.atlas { display: flex; flex-direction: column; gap: 1rem; }
+.world {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem 2.5rem; align-items: center;
+  padding: 1.75rem 2rem; background: var(--sheet); border-left: 4px solid var(--accent);
+  text-decoration: none; transition: transform .2s, box-shadow .2s;
+}
+.world:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -18px rgba(0,0,0,.35); }
+.world h3 { font: 600 1.7rem/1.15 var(--serif); }
+.world-meta { display: block; margin-top: .35rem; font: 500 .8rem/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+.world-covers { display: flex; gap: .6rem; }
+.world-covers .book-cover { width: 5.6rem; }
+
+/* ---------- мрежа с корици ---------- */
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: 2rem 1.5rem; }
+.grid a { text-decoration: none; display: block; }
+.grid .t { display: block; margin-top: .7rem; font: 600 1rem/1.25 var(--serif); }
+.grid .s { display: block; margin-top: .2rem; font-size: .85rem; color: var(--dim); }
+.grid a:hover .t { color: var(--accent); }
+
+/* ---------- за автора ---------- */
+
+.about { display: grid; grid-template-columns: 15rem 1fr; gap: 2.5rem; align-items: start; }
+.about-photo { width: 15rem; aspect-ratio: 4 / 5; background: var(--surface); overflow: hidden; }
+.about-photo img { width: 100%; height: 100%; object-fit: cover; }
+.about-photo .initials { display: grid; place-items: center; height: 100%; font: 500 4rem/1 var(--serif); color: var(--on-accent); background: var(--accent); }
+.about-text p + p { margin-top: 1rem; }
+.about-text { max-width: 40rem; font-size: 1.08rem; }
+.pending { color: var(--dim); font-style: italic; }
+
+/* ---------- страница на книга ---------- */
+
+.book-top { padding: clamp(3rem, 7vw, 5rem) 0 clamp(2rem, 4vw, 3rem); }
+.book-grid { display: grid; grid-template-columns: minmax(12rem, 20rem) 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+.book-top h1 { margin-top: .5rem; font: 600 clamp(2.3rem, 5vw, 3.6rem)/1.05 var(--serif); letter-spacing: -.02em; }
+.subtitle { margin-top: .6rem; font-size: 1.2rem; font-style: italic; color: var(--dim); }
+.by { margin-top: 1rem; font: 500 .95rem/1.3 var(--sans); letter-spacing: .06em; text-transform: uppercase; }
+.by a { text-decoration: none; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+.chip { padding: .25rem .7rem; border: 1px solid var(--rule); border-radius: 99px; font: 500 .82rem/1.4 var(--sans); color: var(--dim); }
+.annotation { max-width: 42rem; font-size: 1.1rem; }
+.annotation p + p { margin-top: 1rem; }
+.ann-missing { color: var(--dim); font-style: italic; }
+.ann-fallback summary { cursor: pointer; color: var(--accent); margin: .6rem 0 1rem; }
+
+.page-head { padding: clamp(3rem, 7vw, 5rem) 0 1.5rem; }
+.page-head h1 { font: 600 clamp(2.3rem, 5vw, 3.4rem)/1.05 var(--serif); letter-spacing: -.02em; }
+.page-head .tagline { margin-top: .6rem; }
+
+/* ---------- долу ---------- */
+
+.foot { padding: 2rem 0 2.5rem; border-top: 1px solid var(--rule); font-size: .88rem; color: var(--dim); }
+.foot .container { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
+.foot a { color: var(--text); }
+
+/* ---------- телефон ---------- */
+
+@media (max-width: 900px) {
+  .spine { position: sticky; top: 0; inset: auto; width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: .5rem 1.25rem; padding: .8rem 16px; }
+  .spine-name { flex-direction: row; gap: .3em; font-size: 1.2rem; }
+  .spine-nav { margin: 0; flex-direction: row; flex-wrap: wrap; gap: .1rem 1rem; order: 3; width: 100%; }
+  .spine-nav a { margin: 0; padding: .2rem 0; border-left: 0; border-bottom: 2px solid transparent; }
+  .spine-nav a[aria-current] { border-bottom-color: var(--accent); }
+  .spine-foot { display: none; }
+  .langs { order: 4; width: 100%; margin: 0; padding: .2rem 0 0; border-top: 1px solid rgba(236,233,226,.12); }
+  .page { margin-left: 0; }
+  .container { padding: 0 16px; }
+  .spread { grid-template-columns: 7rem 1fr; gap: 1rem; }
+  .spread .book-cover { width: 7rem; }
+  .spreads { grid-template-columns: 1fr; }
+  .world { grid-template-columns: 1fr; padding: 1.25rem; }
+  .world-covers .book-cover { width: 4.2rem; }
+  .about { grid-template-columns: 1fr; }
+  .about-photo { width: 11rem; }
+  .book-grid { grid-template-columns: 1fr; }
+  .book-grid .book-cover { max-width: 15rem; }
+}
+
+
+/* ---------- служебни корици (от static/style.css на AverPress) ---------- */
+/* ---------- book covers ---------- */
+
+.book-cover {
+  position: relative; margin: 0;
+  aspect-ratio: 2 / 3;
+  border-radius: 2px 5px 5px 2px;
+  overflow: hidden;
+  background: var(--ink-3);
+  box-shadow: var(--shadow-book);
+  container-type: inline-size;
+}
+.book-cover > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* гръбчето: светлина и сянка покрай левия ръб */
+.book-cover::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(0,0,0,.28) 0, rgba(255,255,255,.16) 2.2%, rgba(0,0,0,.1) 4%, transparent 8%),
+              linear-gradient(180deg, rgba(255,255,255,.06), transparent 30%);
+}
+
+/* генерирана корица, докато няма истинска */
+.cover {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  padding: 10cqw 9cqw 9cqw 11cqw;
+  background: var(--cb); color: var(--ci);
+  overflow: hidden;
+}
+.cover > span { position: relative; z-index: 1; }
+.c-author { font: 600 5.6cqw/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; opacity: .9; }
+.c-title { margin-top: auto; font: 500 13.5cqw/1.02 var(--serif); letter-spacing: -.01em; text-wrap: balance; }
+.c-series { margin-top: 5cqw; font: 400 5.4cqw/1.25 var(--serif); font-style: italic; color: var(--ca); }
+
+.cover::before { content: ""; position: absolute; pointer-events: none; }
+
+/* любов и семейство: залязващо слънце */
+.cover--warm::before {
+  width: 78cqw; height: 78cqw; right: -24cqw; top: 14cqw; border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--ca), transparent 68%);
+  opacity: .55;
+}
+.cover--warm .c-title { font-style: italic; }
+
+/* уютна загадка: двойна рамка и ключалка */
+.cover--frame { padding: 15cqw 13cqw 14cqw; text-align: center; align-items: center; }
+.cover--frame::before {
+  inset: 5cqw; border: .8cqw solid var(--ca);
+  box-shadow: inset 0 0 0 2.2cqw var(--cb), inset 0 0 0 2.6cqw var(--ca);
+}
+.cover--frame .c-title { margin-top: auto; margin-bottom: auto; }
+.cover--frame::after {
+  content: ""; position: absolute; left: 50%; top: 31%; width: 7cqw; height: 13cqw; transform: translateX(-50%);
+  background: radial-gradient(circle at 50% 30%, var(--ca) 0 34%, transparent 35%),
+              linear-gradient(var(--ca), var(--ca)) 50% 100% / 34% 62% no-repeat;
+  opacity: .8;
+}
+
+/* мрачно фентъзи: праг — арка с жар */
+.cover--arch { text-align: center; align-items: center; }
+.cover--arch::before {
+  left: 50%; bottom: -1cqw; width: 58cqw; height: 86cqw; transform: translateX(-50%);
+  border: 1.6cqw solid color-mix(in srgb, var(--ca) 70%, transparent);
+  border-bottom: 0; border-radius: 29cqw 29cqw 0 0;
+  background: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--ca) 45%, transparent), transparent 65%);
+}
+.cover--arch .c-title { margin-top: 6cqw; text-transform: uppercase; font-size: 11cqw; letter-spacing: .04em; }
+.cover--arch .c-series { margin-top: auto; }
+
+/* военна фантастика: решетка на прицел */
+.cover--grid::before {
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 58%, color-mix(in srgb, var(--ca) 30%, transparent) 58.4%, transparent 59%),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--ca) 12%, transparent) 0 1px, transparent 1px 12cqw),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--ca) 12%, transparent) 0 1px, transparent 1px 12cqw);
+}
+.cover--grid::after {
+  content: ""; position: absolute; right: 12cqw; top: 30cqw; width: 26cqw; height: 26cqw;
+  border: .9cqw solid var(--ca); border-radius: 50%;
+  box-shadow: 0 0 6cqw color-mix(in srgb, var(--ca) 60%, transparent);
+}
+.cover--grid .c-title { font-family: var(--sans); font-weight: 700; font-size: 12cqw; letter-spacing: -.02em; text-transform: uppercase; }
+.cover--grid .c-series { font-family: var(--sans); font-style: normal; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; font-size: 4.4cqw; }
+
+/* корица с картина: заглавието е горе, върху небето */
+.cover--art { color: var(--cb); padding-top: 9cqw; align-items: flex-end; text-align: right; }
+.c-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cover--art .c-title { order: -1; margin-top: 4cqw; font-size: 15cqw; }
+.cover--art .c-author { order: -2; }
+.cover--art .c-series { display: none; }
+
